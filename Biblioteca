@@ -1,0 +1,98 @@
+#include <stdio.h>
+#include <string.h>
+#include <conio.h>
+#include <stdlib.h> /* Função exit*/
+#include <ctype.h> /* Função toupper*/
+#include <locale.h>
+
+#define ARQ "Dados.Dat" /* Arquivo com os dados*/
+
+#define OP_INSERIR '1'
+#define OP_ALTERAR '2'
+#define OP_APAGAR  '3'
+#define OP_LISTAR '4'
+#define OP_PESQUISAR '5'
+
+#define OP_SAIR '0'
+
+#define OP_PESQ_ANO '1'
+#define OP_PESQ_TITULO '2'
+
+
+
+char *MainMenu[]={
+	"1. Inserir Livro",
+	"2. Alterar Livro",
+	"3. Apagar Livro",
+	"4.Listar Livros na biblioteca",
+	"5. Pesquisas",
+	"0. Sair",
+	NULL	/* Acabaram as opções*/
+};
+
+char *PesqMenu[]={
+	"1. Pesquisar por Intervalo  de Ano de Lançamento",
+	"2. Pesquisar por Título",
+	"0. Voltar",
+	NULL	/* Acabaram as opções*/ 	
+};
+
+FILE *fp; /*Variável Global pois é útil ao longo do programa*/
+
+
+typedef struct
+{
+	int Dia;
+	int Mes;
+	int Ano;
+}DATA;
+
+typedef struct
+{
+	char Titulo[30+1];
+	char Autores[100+1];
+	char Editora[30+1];
+	int Ano;
+	int Edicao;
+	int Quant_Disp;
+	int Quant_Emprest;
+	DATA Dat_Emprest;
+	DATA Dat_Dev;
+	char Status; 	/*		'*' indica que o registro será apagado		*/
+}LIVRO;
+
+int main()
+ {
+ 	setlocale(LC_ALL, "Portuguese");
+ 	char Opcao;
+ 	Inic();
+ 	while((Opcao=Menu(MainMenu))!=OP_SAIR)
+ 		switch(Opcao)
+ 		{
+ 			case OP_INSERIR: Inserir_Livro();break;
+ 			case OP_ALTERAR: Alterar_Livro();break;
+ 			case OP_APAGAR:  Apagar_Livro(); break;
+ 			case OP_LISTAR:  Listar(); break;
+ 			case OP_MAIS_ALUGADOS: MaisAlugados(); break;
+ 			case OP_PESQUISAR:
+ 				while((Opcao=Menu(PesqMenu))!=OP_SAIR)
+ 				switch(Opcao)
+ 				{
+ 					case OP_PESQ_ANO:
+ 						{
+ 							int n1,n2;
+ 							printf("Qual o intervalo de anos de lançamento: ");
+ 							scanf("%d%d",&n1,&n2);fflush(stdin);
+ 							Pesquisar_Ano(n1,n2);
+ 							break; 
+					 	}
+					case OP_PESQ_TITULO:
+						{
+							char string[BUFSIZ+1];
+							printf("Qual o título do livro a Procurar: ");
+							gets(string);fflush(stdin);
+							Pesquisar_Titulo(string);
+						}
+				 }
+		 }
+ }
