@@ -12,6 +12,7 @@
 #define OP_APAGAR  '3'
 #define OP_LISTAR '4'
 #define OP_PESQUISAR '5'
+#define OP_MAIS_ALUGADOS '6'
 
 #define OP_SAIR '0'
 
@@ -26,6 +27,7 @@ char *MainMenu[]={
 	"3. Apagar Livro",
 	"4.Listar Livros na biblioteca",
 	"5. Pesquisas",
+	"6. Listar livros mais alugados"
 	"0. Sair",
 	NULL	/* Acabaram as opções*/
 };
