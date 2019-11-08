@@ -20,6 +20,24 @@
 #define OP_PESQ_TITULO '2'
 
 
+FILE *fp; /*Variável Global pois é útil ao longo do programa*/
+
+
+void Inic()
+{
+	fp=fopen(ARQ,"r+b"); /*Tentar Abrir*/
+	if(fp==NULL)
+	{
+		fp=fopen(ARQ,"w+b");
+		if(fp==NULL)
+		{
+			fprintf(stderr,"ERRO FATAL: Impossível Criar Arquivo de Dados\n");
+			exit(1);
+		}
+	}
+}
+
+
 
 char *MainMenu[]={
 	"1. Inserir Livro",
@@ -39,7 +57,33 @@ char *PesqMenu[]={
 	NULL	/* Acabaram as opções*/ 	
 };
 
-FILE *fp; /*Variável Global pois é útil ao longo do programa*/
+
+
+
+
+
+ char Menu(char *Opcoes[])
+ {
+ 	int i;
+ 	char ch;
+ 	
+ 	while(1)
+ 	{  /*Cls*/
+ 		printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");//system("cls");
+ 		for(i=0;Opcoes[i]!=NULL; i++)
+ 		printf("\t\t%s\n\n",Opcoes[i]);
+ 		
+ 	printf("\n\n\tOpção: ");
+ 	ch=getchar(); fflush(stdin);
+ 	for(i=0; Opcoes[i]!=NULL; i++)
+ 	if(Opcoes[i][0]==ch)
+ 		return ch;
+	 }
+ }
+ 
+
+ 
+
 
 
 typedef struct
@@ -71,7 +115,8 @@ int main()
  	while((Opcao=Menu(MainMenu))!=OP_SAIR)
  		switch(Opcao)
  		{
- 			case OP_INSERIR: Inserir_Livro();break;
+ 			/*
+			 case OP_INSERIR: Inserir_Livro();break;
  			case OP_ALTERAR: Alterar_Livro();break;
  			case OP_APAGAR:  Apagar_Livro(); break;
  			case OP_LISTAR:  Listar(); break;
@@ -95,6 +140,6 @@ int main()
 							gets(string);fflush(stdin);
 							Pesquisar_Titulo(string);
 						}
-				 }
+				 }*/
 		 }
  }
