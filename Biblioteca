@@ -46,8 +46,9 @@ typedef struct
 	char editora[30+1];
 	int ano;
 	int edicao;
-	int ContExist; 
-	int ContEmp;
+	int n_Exemplares; 
+	int n_Emprestados;
+	int cont;
 	char status; 	/*		'*' indica que o registro será apagado		*/	
 	LIVRO exemplar[3];
 }OBRA;
@@ -75,9 +76,9 @@ void Ler_Obra(OBRA *o)
 	printf("Autores	: ");gets(o->autores);
 	printf("Editora	: ");gets(o->editora);
 	printf("Ano	: ");scanf("%d",&o->ano);
-	printf("Edição	: ");gets(o->edicao;
+	printf("Edição	: ");scanf("%d",&o->edicao);
 	printf("Assunto	: ");gets(o->assunto);
-	printf("Quantidade de exemplares na biblioteca (0,1,2 ou 3)	: ");scanf("%d",&o->ContExist);
+	printf("Quantidade de exemplares na biblioteca (0,1,2 ou 3)	: ");scanf("%d",&o->n_Exemplares);
 	o->Status=' ';
 	fflush(stdin);
 }
@@ -94,6 +95,25 @@ void Inic()
 			exit(1);
 		}
 	}
+}
+
+void Mostrar_Obra(OBRA o)
+{
+	printf("Título:%s  \n",o.titulo);
+	printf("Autores:%s  \n",o.autores);
+	printf("Editora:%s  \n",o.editora);
+	printf("Ano:%d  \n",o.ano);
+	printf("Edição:%s  \n",o.edicao);
+	printf("Assunto:%s  \n",o.assunto);
+	printf("Quantidade de Exemplares existentes na biblioteca:%d  \n",o.n_Exemplares);
+	printf("Quantidade de Exemplares Alugados:%s  \n",o.n_Emprestados);
+	printf("Quantas vezes essa obra foi alugada:%s  \n",o.cont);
+}
+
+void Mensagem(char *msg)
+{
+	printf(msg);
+	getchar();
 }
 
 
@@ -155,9 +175,9 @@ int main()
  		switch(Opcao)
  		{
  			/*
-			 case OP_INSERIR: Inserir_Livro();break;
- 			case OP_ALTERAR: Alterar_Livro();break;
- 			case OP_APAGAR:  Apagar_Livro(); break;
+			 case OP_INSERIR: Inserir_Obra();break;
+ 			case OP_ALTERAR: Alterar_Obra();break;
+ 			case OP_APAGAR:  Apagar_Obra(); break;
  			case OP_LISTAR:  Listar(); break;
  			case OP_MAIS_ALUGADOS: MaisAlugados(); break;
  			case OP_PESQUISAR:
