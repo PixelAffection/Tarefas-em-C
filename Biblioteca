@@ -32,28 +32,55 @@ typedef struct
  
 typedef struct
 {
-	char codigoL[4+1];
-	char status=' ';
+	char CodigoL[4+1];
+	char StatusL;
 	DATA DE; // Data de Empréstimo
 	DATA DD; // Data de Devolução
 }LIVRO;
 
 typedef struct
 {
-	char titulo[30+1];
-	char autores[100+1];
-	char assunto[30+1];
-	char editora[30+1];
-	int ano;
-	int edicao;
-	int n_Exemplares; 
-	int n_Emprestados;
-	int cont;
-	char status; 	/*		'*' indica que o registro será apagado		*/	
-	char codigoO[4+1];
-	LIVRO exemplar[3];
+	char Titulo[30+1];
+	char Autores[100+1];
+	char Assunto[30+1];
+	char Editora[30+1];
+	int Ano;
+	int Edicao;
+	int N_Exemplares; 
+	int N_Emprestados;
+	int Cont;
+	char StatusO; 	/*		'*' indica que o registro será apagado		*/	
+	LIVRO Exemplar[3];
 }OBRA;
 
+void Ler_Obra(OBRA *o)
+{
+	printf("Título	: ");gets(o->Titulo);
+	printf("Autores	: ");gets(o->Autores);
+	printf("Editora	: ");gets(o->Editora);
+	printf("Ano	: ");scanf("%d",&o->Ano);
+	printf("Edição	: ");scanf("%d",&o->Edicao);
+	printf("Assunto	: ");gets(o->Assunto);
+	printf("Quantidade de exemplares na biblioteca (0,1,2 ou 3)	: ");scanf("%d",&o->N_Exemplares);
+	
+	o->N_Emprestados=0;
+	o->Cont=0;
+	
+	o->StatusO=' ';
+	fflush(stdin);
+}
+
+void Mensagem(char *msg)
+{
+	printf(msg);
+	getchar();
+}
+void Adicionar_Obra (OBRA o)
+{
+	fseek(fp,0L, SEEK_END);
+	if(fwrite(&o,sizeof(o),1,fp)!=1)
+		Mensagem("adicionar Pessoa: Falhou a escrita do registro");
+}
 
 void Inserir_Obra()
  {
@@ -64,27 +91,25 @@ void Inserir_Obra()
  
  
  /* Adiciona uma pessoa ao arquivo*/
-void Adicionar_Obra (OBRA o)
+
+
+
+
+void Mostrar_Obra(OBRA o)
 {
-	fseek(fp,0L, SEEK_END);
-	if(fwrite(&p,sizeof(o),1,fp)!=1)
-		Mensagem("adicionar Pessoa: Falhou a escrita do registro");
+	puts("\n\n");
+	printf("Título:%s  \n\n",o.Titulo);
+	printf("Autores:%s  \n\n",o.Autores);
+	printf("Editora:%s  \n\n",o.Editora);
+	printf("Ano:%d  \n\n",o.Ano);
+	printf("Edição:%d  \n\n",o.Edicao);
+	printf("Assunto:%s  \n\n",o.Assunto);
+	printf("Quantidade de Exemplares existentes na biblioteca:%d  \n\n",o.N_Exemplares);
+	printf("Quantidade de Exemplares Alugados:%d  \n\n",o.N_Emprestados);
+	printf("Quantas vezes essa obra foi alugada:%d  \n\n",o.Cont);
 }
 
-void Ler_Obra(OBRA *o)
-{
-	printf("Título	: ");gets(o->titulo);
-	printf("Autores	: ");gets(o->autores);
-	printf("Editora	: ");gets(o->editora);
-	printf("Ano	: ");scanf("%d",&o->ano);
-	printf("Edição	: ");scanf("%d",&o->edicao);
-	printf("Assunto	: ");gets(o->assunto);
-	printf("Quantidade de exemplares na biblioteca (0,1,2 ou 3)	: ");scanf("%d",&o->n_Exemplares);
-	printf("Código de 4 digitos	: ");gets(o->codigoO);
-	
-	o->Status=' ';
-	fflush(stdin);
-}
+
 
 void Inic()
 {
@@ -100,25 +125,137 @@ void Inic()
 	}
 }
 
-void Mostrar_Obra(OBRA o)
-{
-	printf("Título:%s  \n",o.titulo);
-	printf("Autores:%s  \n",o.autores);
-	printf("Editora:%s  \n",o.editora);
-	printf("Ano:%d  \n",o.ano);
-	printf("Edição:%s  \n",o.edicao);
-	printf("Assunto:%s  \n",o.assunto);
-	printf("Quantidade de Exemplares existentes na biblioteca:%d  \n",o.n_Exemplares);
-	printf("Quantidade de Exemplares Alugados:%s  \n",o.n_Emprestados);
-	printf("Quantas vezes essa obra foi alugada:%s  \n",o.cont);
-}
 
-void Mensagem(char *msg)
-{
-	printf(msg);
-	getchar();
-}
 
+void Listar()
+ {
+ 	long int N_Linhas=0;
+ 	OBRA reg;
+ 	rewind(fp);
+ 	while(1)
+ 	{
+ 		if (fread(&reg,sizeof(reg),1,fp)!=1)break; /*Sair do Laço*/
+ 		
+ 		
+ 		if (reg.StatusO=='*')continue; /*Passa ao próximo registro*/
+ 		
+ 		Mostrar_Obra(reg);
+ 		
+ 			puts("\n\n\n\n");
+ 			
+ 		N_Linhas++;
+ 		
+ 		if(N_Linhas%20==0)
+ 		Mensagem("PESSIONE <ENTER> para continuar	.	.	. ");
+	 }
+	Mensagem("PESSIONE <ENTER> para continuar	.	.	. "); /*No fim da Listagem*/ 
+ }
+ 
+
+
+ void Alterar_Obra()
+ {
+ 	OBRA x;
+ 	long int n_reg;
+	printf("Qual o Nº do Registro: ");
+	scanf("%ld", &n_reg);fflush(stdin);
+	if(fseek(fp, (n_reg-1)*sizeof(OBRA),SEEK_SET)!=0)
+		{
+		Mensagem("Registro Inexistente ou Problemas no Posicionamento!!!");
+		return;	
+			
+		}
+	if(fread(&x,sizeof(OBRA),1,fp)!=1)
+	{
+		Mensagem("Problemas na leitura do Registro!!!");
+		return;
+	}
+	if(x.StatusO=='*')
+	{
+		Mensagem("Um Registro Apagado não pode ser alterado!!!\n\n");
+		return;
+	}
+		
+	printf("\n\nDados Atuais\n\n");
+	Mostrar_Obra(x);
+	printf("\n\nNovos Dados\n\n");
+	Ler_Obra(&x);
+	
+	//Recuar um Registro no Arquivo
+	fseek(fp,-(long) sizeof(OBRA),SEEK_CUR);
+	//Reescrever o Registro;
+	fwrite(&x,sizeof(OBRA),1,fp);
+	fflush(fp); /*Despejar os Dados no Disco Rígido*/	 
+ }
+ 
+ void Apagar_Obra()
+ {
+ 	OBRA x;
+ 	long int n_reg;
+ 	char resp;
+ 	
+ 	printf("Qual o Nº do Registro:");
+ 	scanf("%ld", &n_reg);fflush(stdin);
+ 	
+ 	if(fseek(fp, (n_reg-1)*sizeof(OBRA),SEEK_SET)!=0)
+		{
+		Mensagem("Registro Inexistente ou Problemas no Posicionamento!!!");
+		return;	
+			
+		}
+	if(fread(&x,sizeof(OBRA),1,fp)!=1)
+	{
+		Mensagem("Problemas na leitura do Registro!!!");
+		return;
+	}
+	if(x.StatusO=='*')
+	{
+		Mensagem("O registro já está apagado!!!\n\n");
+		return;
+	}
+	
+	printf("\n\nDados Atuais\n\n");
+	Mostrar_Obra(x);
+	
+	printf("\n\nApagar o Registro (s/n)???: "); resp=getchar(); fflush(stdin);
+	if (toupper(resp)!='S') return;
+	
+	x.StatusO='*';
+		//Recuar um Registro no Arquivo
+	fseek(fp,-(long) sizeof(OBRA),SEEK_CUR);
+	//Reescrever o Registro;
+	fwrite(&x,sizeof(OBRA),1,fp);
+	fflush(fp); /*Despejar os Dados no Disco Rígido*/	
+	
+ }
+ 
+
+
+
+void Pesquisar_Titulo(char *s)
+ {
+
+ 	OBRA reg;
+ 	rewind(fp);
+ 	
+ 	while(fread(&reg,sizeof(OBRA),1,fp))
+ 	if(reg.StatusO!='*'&&strstr(reg.Titulo,s))
+ 		Mostrar_Obra(reg);
+ 		
+ 	Mensagem("PESSIONE <ENTER> para continuar	.	.	. "); /*No fim da Listagem*/	
+ }
+
+ void Pesquisar_Ano (int ini, int fim)
+{
+	OBRA reg;
+	rewind(fp);
+	
+	while(fread(&reg,sizeof(OBRA),1,fp))
+	if(reg.StatusO!='*' && reg.Ano>=ini && reg.Ano<=fim)
+		Mostrar_Obra(reg);
+	
+	Mensagem("PESSIONE <ENTER> para continuar	.	.	. "); /*No fim da Listagem*/		
+ } 
 
 
 char *MainMenu[]={
@@ -127,7 +264,7 @@ char *MainMenu[]={
 	"3. Apagar Livro",
 	"4. Listar Livros na biblioteca",
 	"5. Pesquisas",
-	"6. Listar livros mais alugados"
+	"6. Listar livros mais alugados",
 	"0. Sair",
 	NULL	/* Acabaram as opções*/
 };
@@ -138,11 +275,6 @@ char *PesqMenu[]={
 	"0. Voltar",
 	NULL	/* Acabaram as opções*/ 	
 };
-
-
-
-
-
 
  char Menu(char *Opcoes[])
  {
@@ -177,12 +309,12 @@ int main()
  	while((Opcao=Menu(MainMenu))!=OP_SAIR)
  		switch(Opcao)
  		{
- 			/*
-			 case OP_INSERIR: Inserir_Obra();break;
+ 			
+			case OP_INSERIR: Inserir_Obra();break;
  			case OP_ALTERAR: Alterar_Obra();break;
  			case OP_APAGAR:  Apagar_Obra(); break;
  			case OP_LISTAR:  Listar(); break;
- 			case OP_MAIS_ALUGADOS: MaisAlugados(); break;
+ 			// OP_MAIS_ALUGADOS: MaisAlugados(); break;
  			case OP_PESQUISAR:
  				while((Opcao=Menu(PesqMenu))!=OP_SAIR)
  				switch(Opcao)
@@ -202,6 +334,6 @@ int main()
 							gets(string);fflush(stdin);
 							Pesquisar_Titulo(string);
 						}
-				 }*/
+				 }
 		 }
  }
