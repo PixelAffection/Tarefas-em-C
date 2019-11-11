@@ -13,6 +13,7 @@
 #define OP_LISTAR '4'
 #define OP_PESQUISAR '5'
 #define OP_MAIS_ALUGADOS '6'
+#define OP_MOSTRAR_EXEMPLARES '7'
 
 #define OP_SAIR '0'
 
@@ -25,9 +26,9 @@ FILE *fp; /*Variável Global pois é útil ao longo do programa*/
 
 typedef struct
 {
-	int Dia;
-	int Mes;
-	int Ano;
+	int Dia=0;
+	int Mes=0;
+	int Ano=0;
 }DATA;
  
 typedef struct
@@ -50,18 +51,36 @@ typedef struct
 	int N_Emprestados;
 	int Cont;
 	char StatusO; 	/*		'*' indica que o registro será apagado		*/	
-	LIVRO Exemplar[3];
+	LIVRO Exemplar[4];
 }OBRA;
 
 void Ler_Obra(OBRA *o)
 {
+	int i;
 	printf("Título	: ");gets(o->Titulo);
 	printf("Autores	: ");gets(o->Autores);
 	printf("Editora	: ");gets(o->Editora);
 	printf("Ano	: ");scanf("%d",&o->Ano);
 	printf("Edição	: ");scanf("%d",&o->Edicao);
 	printf("Assunto	: ");gets(o->Assunto);
-	printf("Quantidade de exemplares na biblioteca (0,1,2 ou 3)	: ");scanf("%d",&o->N_Exemplares);
+	printf("Quantidade de exemplares na biblioteca (0,1,2,3 ou 4)	: ");scanf("%d",&o->N_Exemplares);
+	
+	for(i=0;i<(o->N_Exemplares);i++)
+	{
+		if(i==4)
+		{
+			puts("\n\nquantidade de livros excessiva, ajustamos a quantidade para 4\n\n");
+			break;
+		};
+		o->Exemplar[i].StatusL='E';
+		
+	}
+	
+	while(i<4)
+	{
+		o->Exemplar[i].StatusL='I';
+		i++;
+	}
 	
 	o->N_Emprestados=0;
 	o->Cont=0;
@@ -255,7 +274,62 @@ void Pesquisar_Titulo(char *s)
 		Mostrar_Obra(reg);
 	
 	Mensagem("PESSIONE <ENTER> para continuar	.	.	. "); /*No fim da Listagem*/		
- } 
+ }
+ 
+ 
+
+ void Mostrar_Exemplares()
+ {
+ 	
+ 	OBRA x;
+ 	long int n_reg;
+	printf("Qual o Nº do Registro: ");
+	scanf("%ld", &n_reg);fflush(stdin);
+	if(fseek(fp, (n_reg-1)*sizeof(OBRA),SEEK_SET)!=0)
+		{
+		Mensagem("Registro Inexistente ou Problemas no Posicionamento!!!");
+		return;	
+			
+		}
+	if(fread(&x,sizeof(OBRA),1,fp)!=1)
+	{
+		Mensagem("Problemas na leitura do Registro!!!");
+		return;
+	}
+	if(x.StatusO=='*')
+	{
+		Mensagem("Um Registro Apagado não pode ser lido!!!\n\n");
+		return;
+	}
+		
+	printf("\n\nDados Atuais\n\n");
+	Mostrar_Obra(x);
+	
+	printf("\n\nDados dos exemplares:\n\n");
+	
+ 	int i;
+ 	for(i=0;i<4;i++)
+ 	{
+ 		
+ 			printf("Exemplar %d: Status: %c ; Data de empréstimo:%d/%d/%d ; Data de devolução:%d/%d/%d\n\n",i,  x.Exemplar[i].StatusL,
+ 			
+			 																								x.Exemplar[i].DE.Dia,
+			 																								x.Exemplar[i].DE.Mes,
+			 																								x.Exemplar[i].DE.Ano,
+			 																								x.Exemplar[i].DD.Dia,
+			 																								x.Exemplar[i].DD.Mes,
+			 																								x.Exemplar[i].DD.Ano);
+			
+			 													
+			 																				
+		 
+	 }
+	 
+	puts("Aperte qualquer tecla para voltar ao menu principal");
+ 	getchar();
+ 	
+ 	
+  } 
 
 
 char *MainMenu[]={
@@ -265,6 +339,7 @@ char *MainMenu[]={
 	"4. Listar Livros na biblioteca",
 	"5. Pesquisas",
 	"6. Listar livros mais alugados",
+	"7. Listar os exemplares de um livro",
 	"0. Sair",
 	NULL	/* Acabaram as opções*/
 };
@@ -315,6 +390,7 @@ int main()
  			case OP_APAGAR:  Apagar_Obra(); break;
  			case OP_LISTAR:  Listar(); break;
  			// OP_MAIS_ALUGADOS: MaisAlugados(); break;
+ 			case OP_MOSTRAR_EXEMPLARES: Mostrar_Exemplares();break;
  			case OP_PESQUISAR:
  				while((Opcao=Menu(PesqMenu))!=OP_SAIR)
  				switch(Opcao)
