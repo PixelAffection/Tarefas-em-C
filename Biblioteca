@@ -14,6 +14,8 @@
 #define OP_PESQUISAR '5'
 #define OP_MAIS_ALUGADOS '6'
 #define OP_MOSTRAR_EXEMPLARES '7'
+#define OP_ALUGAR '8'
+#define OP_DEVOLVER '9'
 
 #define OP_SAIR '0'
 
@@ -24,14 +26,14 @@
 
 FILE *fp; /*Variável Global pois é útil ao longo do programa*/
 
-typedef struct
+typedef struct/*DATA:DIA,MES,ANO*/
 {
 	int Dia=0;
 	int Mes=0;
 	int Ano=0;
 }DATA;
  
-typedef struct
+typedef struct/*LIVRO:CodigoL,StatusL,DATA DE,DATA DD*/
 {
 	char CodigoL[4+1];
 	char StatusL;
@@ -39,7 +41,8 @@ typedef struct
 	DATA DD; // Data de Devolução
 }LIVRO;
 
-typedef struct
+typedef struct/*OBRA:Titulo,autor,assunto,editora,ano,ediçao,
+N_exemplares,N_emprestados,Cont,StatusO,LIVRO Exemplar*/
 {
 	char Titulo[30+1];
 	char Autores[100+1];
@@ -62,6 +65,7 @@ void Ler_Obra(OBRA *o)
 	printf("Editora	: ");gets(o->Editora);
 	printf("Ano	: ");scanf("%d",&o->Ano);
 	printf("Edição	: ");scanf("%d",&o->Edicao);
+	fflush(stdin);
 	printf("Assunto	: ");gets(o->Assunto);
 	printf("Quantidade de exemplares na biblioteca (0,1,2,3 ou 4)	: ");scanf("%d",&o->N_Exemplares);
 	
@@ -94,11 +98,27 @@ void Mensagem(char *msg)
 	printf(msg);
 	getchar();
 }
+
 void Adicionar_Obra (OBRA o)
 {
 	fseek(fp,0L, SEEK_END);
 	if(fwrite(&o,sizeof(o),1,fp)!=1)
 		Mensagem("adicionar Pessoa: Falhou a escrita do registro");
+}
+  
+  void Mais_Alugados()/*em manutencao*/
+{
+	
+}
+
+void Alugar_livro()/*em manutencao*/
+{
+	
+}
+
+void Devolver_livro()/*em manutencao*/
+{
+	
 }
 
 void Inserir_Obra()
@@ -107,12 +127,7 @@ void Inserir_Obra()
  	Ler_Obra(&o);
  	Adicionar_Obra(o);
  }
- 
- 
  /* Adiciona uma pessoa ao arquivo*/
-
-
-
 
 void Mostrar_Obra(OBRA o)
 {
@@ -128,8 +143,6 @@ void Mostrar_Obra(OBRA o)
 	printf("Quantas vezes essa obra foi alugada:%d  \n\n",o.Cont);
 }
 
-
-
 void Inic()
 {
 	fp=fopen(ARQ,"r+b"); /*Tentar Abrir*/
@@ -144,8 +157,6 @@ void Inic()
 	}
 }
 
-
-
 void Listar()
  {
  	long int N_Linhas=0;
@@ -156,7 +167,8 @@ void Listar()
  		if (fread(&reg,sizeof(reg),1,fp)!=1)break; /*Sair do Laço*/
  		
  		
- 		if (reg.StatusO=='*')continue; /*Passa ao próximo registro*/
+ 		if (reg.StatusO=='*')
+		 continue; /*Passa ao próximo registro*/
  		
  		Mostrar_Obra(reg);
  		
@@ -170,8 +182,6 @@ void Listar()
 	Mensagem("PESSIONE <ENTER> para continuar	.	.	. "); /*No fim da Listagem*/ 
  }
  
-
-
  void Alterar_Obra()
  {
  	OBRA x;
@@ -248,9 +258,6 @@ void Listar()
 	
  }
  
-
-
-
 void Pesquisar_Titulo(char *s)
  {
 
@@ -276,11 +283,9 @@ void Pesquisar_Titulo(char *s)
 	Mensagem("PESSIONE <ENTER> para continuar	.	.	. "); /*No fim da Listagem*/		
  }
  
- 
-
  void Mostrar_Exemplares()
- {
- 	
+{
+	
  	OBRA x;
  	long int n_reg;
 	printf("Qual o Nº do Registro: ");
@@ -311,7 +316,7 @@ void Pesquisar_Titulo(char *s)
  	for(i=0;i<4;i++)
  	{
  		
- 			printf("Exemplar %d: Status: %c ; Data de empréstimo:%d/%d/%d ; Data de devolução:%d/%d/%d\n\n",i,  x.Exemplar[i].StatusL,
+ 			printf("Exemplar %d: Status: %c ; Data de empréstimo:%d/%d/%d ; Data de devolução:%d/%d/%d\n\n",i+1,  x.Exemplar[i].StatusL,
  			
 			 																								x.Exemplar[i].DE.Dia,
 			 																								x.Exemplar[i].DE.Mes,
@@ -326,11 +331,12 @@ void Pesquisar_Titulo(char *s)
 	 }
 	 
 	puts("Aperte qualquer tecla para voltar ao menu principal");
- 	getchar();
+	getchar();
+	system("cls");
+
  	
  	
   } 
-
 
 char *MainMenu[]={
 	"1. Inserir Livro",
@@ -340,6 +346,8 @@ char *MainMenu[]={
 	"5. Pesquisas",
 	"6. Listar livros mais alugados",
 	"7. Listar os exemplares de um livro",
+	"8. Alugar um livro",
+	"9. Devolver um livro",
 	"0. Sair",
 	NULL	/* Acabaram as opções*/
 };
@@ -351,14 +359,14 @@ char *PesqMenu[]={
 	NULL	/* Acabaram as opções*/ 	
 };
 
- char Menu(char *Opcoes[])
+char Menu(char *Opcoes[])
  {
  	int i;
  	char ch;
  	
  	while(1)
- 	{  /*Cls*/
- 		printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");//system("cls");
+ 	{  
+ 		system("cls");
  		for(i=0;Opcoes[i]!=NULL; i++)
  		printf("\t\t%s\n\n",Opcoes[i]);
  		
@@ -370,16 +378,11 @@ char *PesqMenu[]={
 	 }
  }
  
- 
- 
-
-
-
-
 int main()
  {
  	setlocale(LC_ALL, "Portuguese");
  	char Opcao;
+ 	system("color 0b");
  	Inic();
  	while((Opcao=Menu(MainMenu))!=OP_SAIR)
  		switch(Opcao)
@@ -389,8 +392,10 @@ int main()
  			case OP_ALTERAR: Alterar_Obra();break;
  			case OP_APAGAR:  Apagar_Obra(); break;
  			case OP_LISTAR:  Listar(); break;
- 			// OP_MAIS_ALUGADOS: MaisAlugados(); break;
+ 			case OP_MAIS_ALUGADOS: Mais_Alugados(); break;
  			case OP_MOSTRAR_EXEMPLARES: Mostrar_Exemplares();break;
+ 			case OP_ALUGAR:  Alugar_livro();break;
+			case OP_DEVOLVER: Devolver_livro();break;
  			case OP_PESQUISAR:
  				while((Opcao=Menu(PesqMenu))!=OP_SAIR)
  				switch(Opcao)
