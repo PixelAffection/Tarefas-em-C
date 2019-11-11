@@ -1,5 +1,4 @@
-#include <stdio.h>
-#include <string.h>
+ <string.h>
 #include <conio.h>
 #include <stdlib.h> /* Função exit*/
 #include <ctype.h> /* Função toupper*/
@@ -22,8 +21,6 @@
 #define OP_PESQ_ANO '1'
 #define OP_PESQ_TITULO '2'
 
-
-
 FILE *fp; /*Variável Global pois é útil ao longo do programa*/
 
 typedef struct/*DATA:DIA,MES,ANO*/
@@ -35,14 +32,14 @@ typedef struct/*DATA:DIA,MES,ANO*/
  
 typedef struct/*LIVRO:CodigoL,StatusL,DATA DE,DATA DD*/
 {
-	char CodigoL[4+1];
-	char StatusL;
+	//char CodigoL[4+1];
+	char StatusL;/*I=Inesxistente / E=Existente / A=Alugado */
 	DATA DE; // Data de Empréstimo
 	DATA DD; // Data de Devolução
 }LIVRO;
 
 typedef struct/*OBRA:Titulo,autor,assunto,editora,ano,ediçao,
-N_exemplares,N_emprestados,Cont,StatusO,LIVRO Exemplar*/
+N_exemplares,N_emprestados,Cont,StatusO,,N_RegistroLIVRO Exemplar*/
 {
 	char Titulo[30+1];
 	char Autores[100+1];
@@ -53,9 +50,29 @@ N_exemplares,N_emprestados,Cont,StatusO,LIVRO Exemplar*/
 	int N_Exemplares; 
 	int N_Emprestados;
 	int Cont;
-	char StatusO; 	/*		'*' indica que o registro será apagado		*/	
+	char StatusO; 	/*Status da obra	'*' indica que o registro será apagado		*/	
 	LIVRO Exemplar[4];
 }OBRA;
+
+/*funções*/
+void Ler_Obra(OBRA *o);
+void Mostrar_Obra(OBRA o);
+void Mensagem(char *msg);
+void Adicionar_Obra (OBRA o);
+void Mais_Alugados();
+void Alugar_livro();
+void Devolver_livro();
+void Inserir_Obra();
+void Mostrar_Obra(OBRA o);
+void Inic();
+void Listar();
+void Alterar_Obra();
+void Apagar_Obra();
+void Pesquisar_Titulo(char *s);
+void Pesquisar_Ano (int ini, int fim);
+void Mostrar_Exemplares();
+
+/*___________________________________*/
 
 void Ler_Obra(OBRA *o)
 {
@@ -106,16 +123,89 @@ void Adicionar_Obra (OBRA o)
 		Mensagem("adicionar Pessoa: Falhou a escrita do registro");
 }
   
-  void Mais_Alugados()/*em manutencao*/
+void Mais_Alugados()/*em manutencao*/
 {
 	
 }
 
 void Alugar_livro()/*em manutencao*/
 {
+	OBRA x;
+	char resp;
+ 	long int n_reg;
+	printf("Qual o Nº do Registro: ");
+	scanf("%ld", &n_reg);fflush(stdin);
+	if(fseek(fp, (n_reg-1)*sizeof(OBRA),SEEK_SET)!=0)
+		{
+		Mensagem("Registro Inexistente ou Problemas no Posicionamento!!!");
+		return;	
+			
+		}
+	if(fread(&x,sizeof(OBRA),1,fp)!=1)
+	{
+		Mensagem("Problemas na leitura do Registro!!!");
+		return;
+	}
+	if(x.StatusO=='*')
+	{
+		Mensagem("Um Registro Apagado não pode ser alugado!!!\n\n");
+		return;
+	}
+		
+	printf("\n\nDados Atuais\n\n");
+	Mostrar_Obra(x);
 	
+	printf("\n\nDados dos exemplares:\n\n");
+	
+ 	int i;
+ 	for(i=0;i<4;i++)
+ 	{
+ 		
+ 		printf("Exemplar %d: Status: %c ; Data de empréstimo:%d/%d/%d ; Data de devolução:%d/%d/%d\n\n",i+1,  x.Exemplar[i].StatusL,
+ 																						x.Exemplar[i].DE.Dia,
+			 																			x.Exemplar[i].DE.Mes,
+			 																			x.Exemplar[i].DE.Ano,
+			 																			x.Exemplar[i].DD.Dia,
+			 																			x.Exemplar[i].DD.Mes,
+			 																			x.Exemplar[i].DD.Ano);
+			
+			 													
+			 																				
+		 
+	 }
+	 printf("Deseja alugar esse livro?<s/n> ");
+	 resp=getchar();
+       if (toupper(resp)=='S')
+	 {
+		 printf("Qual exemplar?");
+		 scanf("%d",&i);
+		 i--;
+		 if(i<4)
+		 {
+		  	if((x.Exemplar[i].StatusL)=='I')
+				printf("Exemplar não existente\n");
+			 
+	 		else if((x.Exemplar[i].StatusL)=='E')
+			{
+				printf("Data de Empréstimo:\n");
+				scanf("%d",&x.Exemplar[i].DE.Dia);
+				scanf("%d",&x.Exemplar[i].DE.Mes);
+				scanf("%d",&x.Exemplar[i].DE.Ano);
+			
+				//fseek(fp,0L, SEEK_END); 		      	???
+				//if(fwrite(&x,sizeof(x),1,fp)!=1) 	      	???
+				//Mensagem("Falhou a escrita do registro");     ???
+			
+			}
+		}
+	fflush(stdin);
+	puts("Aperte qualquer tecla para voltar ao menu principal");
+	getchar();
+	system("cls");
+
 }
 
+}
 void Devolver_livro()/*em manutencao*/
 {
 	
@@ -317,13 +407,12 @@ void Pesquisar_Titulo(char *s)
  	{
  		
  			printf("Exemplar %d: Status: %c ; Data de empréstimo:%d/%d/%d ; Data de devolução:%d/%d/%d\n\n",i+1,  x.Exemplar[i].StatusL,
- 			
-			 																								x.Exemplar[i].DE.Dia,
-			 																								x.Exemplar[i].DE.Mes,
-			 																								x.Exemplar[i].DE.Ano,
-			 																								x.Exemplar[i].DD.Dia,
-			 																								x.Exemplar[i].DD.Mes,
-			 																								x.Exemplar[i].DD.Ano);
+ 																							x.Exemplar[i].DE.Dia,
+			 																				x.Exemplar[i].DE.Mes,
+			 																				x.Exemplar[i].DE.Ano,
+			 																				x.Exemplar[i].DD.Dia,
+			 																				x.Exemplar[i].DD.Mes,
+			 																				x.Exemplar[i].DD.Ano);
 			
 			 													
 			 																				
@@ -338,7 +427,8 @@ void Pesquisar_Titulo(char *s)
  	
   } 
 
-char *MainMenu[]={
+char *MainMenu[]=
+{
 	"1. Inserir Livro",
 	"2. Alterar Livro",
 	"3. Apagar Livro",
@@ -352,7 +442,8 @@ char *MainMenu[]={
 	NULL	/* Acabaram as opções*/
 };
 
-char *PesqMenu[]={
+char *PesqMenu[]=
+{
 	"1. Pesquisar por Intervalo  de Ano de Lançamento",
 	"2. Pesquisar por Título",
 	"0. Voltar",
