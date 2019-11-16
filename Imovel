@@ -1,0 +1,11 @@
+typedef struct
+{
+	char Identificacao[4+1];
+	char Bairro[30+1];
+	char Endereco[30+1];
+	int n_quartos;
+	float Salario;
+	float Area;
+	float Aluguel;
+	char Status; 	/*		'*' indica que o registro será apagado		*/
+}IMOVEL;
