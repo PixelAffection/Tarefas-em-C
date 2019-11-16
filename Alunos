@@ -1,0 +1,13 @@
+typedef struct
+{
+	char Nome[30+1];
+	char Curso[30+1];
+	char Cadeira[30+1];
+	int Matricula;
+	int Faltas;
+	int P;
+	float Nota1;
+	float Nota2;
+	float Media;
+	char Status; 	/*		'*' indica que o registro será apagado		*/
+}ALUNO;
