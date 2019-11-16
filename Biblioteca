@@ -4,7 +4,6 @@
 #include <stdlib.h> /* Função exit*/
 #include <ctype.h> /* Função toupper*/
 #include <locale.h>
-#include <locale.h>
 
 #define ARQ "Dados.Dat" /* Arquivo com os dados*/
 
