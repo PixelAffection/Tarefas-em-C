@@ -249,7 +249,32 @@ void Listar()
  }
  
 
+//
 
+void Reescrever()
+{
+	int i=0,j=0;
+	OBRA s[10];
+	rewind(fp);
+	while(1)
+	{
+		if (fread(&s[i],sizeof(OBRA),1,fp)!=1)
+		{
+		printf("Erro na %d-ésima tentativa",i);	
+		break;
+		}
+		i++;
+	}
+	for(j=0;j<i;j++)
+	Mostrar_Obra(s[j]);
+	
+	
+	
+}
+
+
+
+//
 
 void Pesquisar_Titulo(char *s)
  {
@@ -378,9 +403,11 @@ char *PesqMenu[]={
 
 int main()
  {
+ 	
  	setlocale(LC_ALL, "Portuguese");
  	char Opcao;
  	Inic();
+ 	Reescrever();
  	while((Opcao=Menu(MainMenu))!=OP_SAIR)
  		switch(Opcao)
  		{
