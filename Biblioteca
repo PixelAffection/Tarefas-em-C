@@ -353,13 +353,28 @@ void Reescrever()
 	for(i=0;i<j;i++)
 	Mostrar_Obra(v[i]);
 		
-	printf("\n\n\nTÉRMINO DA MOSTRA DE OBRAS\n\n\n");
+	printf("Término da mostra de Obras");
 		obrasort(v,j);
 		
 		
 	for(i=0;i<j;i++)
 	Mostrar_Obra(v[i]);
-			
+	
+	fclose(fp);
+	
+	fp=fopen(ARQ,"w+b");
+		if(fp==NULL)
+		{
+			fprintf(stderr,"ERRO FATAL: Impossível Criar Arquivo de Dados\n");
+			exit(1);
+		}
+		
+	for(i=0;i<j;i++)
+	{
+		fwrite(&v[i],sizeof(OBRA),1,fp);
+	}
+	
+	fflush(fp);	
 }
 
 
