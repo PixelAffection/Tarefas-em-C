@@ -54,6 +54,74 @@ typedef struct
 	LIVRO Exemplar[4];
 }OBRA;
 
+
+int dictstrcmp(char *str1, char *str2)
+{
+while(1)
+	{
+	char c1 = *str1++;
+	char c2 = *str2++;
+
+	if(isupper(c1))
+		c1 = tolower(c1);
+
+	if(isupper(c2))
+		c2 = tolower(c2);
+
+	if(c1 != c2)
+		return c1 - c2;
+	if(c1 == '\0')
+		return 0;
+	}
+}
+
+void Copiar_Obra(OBRA *dest, OBRA orig)
+{
+	int i=0;
+	
+	dest->Ano=orig.Ano;
+	dest->Cont=orig.Cont;
+	dest->Edicao=orig.Edicao;
+	dest->N_Emprestados=orig.N_Emprestados;
+	dest->N_Exemplares=orig.N_Exemplares;
+	dest->StatusO=orig.StatusO;
+	
+	strcpy(dest->Assunto,orig.Assunto);
+	strcpy(dest->Autores,orig.Autores);
+	strcpy(dest->Editora,orig.Editora);
+	strcpy(dest->Titulo,orig.Titulo);
+	
+	
+	for(i=0;i<4;i++)
+	{
+	dest->Exemplar[i].DD=orig.Exemplar[i].DD;
+	dest->Exemplar[i].DE=orig.Exemplar[i].DE;
+	dest->Exemplar[i].StatusL=orig.Exemplar[i].StatusL;
+	}
+}
+
+void obrasort(OBRA *obras, int nstrings)
+{
+int i, j;
+int didswap;
+OBRA tmp;
+
+do	{
+	didswap = 0;
+	for(i = 0; i < nstrings - 1; i++)
+		{
+		j = i + 1;
+		if(dictstrcmp(obras[i].Titulo, obras[j].Titulo) > 0)
+			{
+			Copiar_Obra(&tmp,obras[i]);
+			Copiar_Obra(&obras[i],obras[j]);
+			Copiar_Obra(&obras[j],tmp);
+			}
+		}
+	} while(didswap);
+}
+
+
 void Ler_Obra(OBRA *o)
 {
 	int i;
@@ -285,6 +353,13 @@ void Reescrever()
 	for(i=0;i<j;i++)
 	Mostrar_Obra(v[i]);
 		
+	printf("\n\n\nTÉRMINO DA MOSTRA DE OBRAS\n\n\n");
+		obrasort(v,j);
+		
+		
+	for(i=0;i<j;i++)
+	Mostrar_Obra(v[i]);
+			
 }
 
 
