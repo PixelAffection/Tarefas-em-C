@@ -50,6 +50,7 @@ typedef struct
 	int N_Exemplares; 
 	int N_Emprestados;
 	int Cont;
+	int n_registro;
 	char StatusO; 	/*		'*' indica que o registro será apagado		*/	
 	LIVRO Exemplar[4];
 }OBRA;
@@ -187,6 +188,7 @@ void Inserir_Obra()
 void Mostrar_Obra(OBRA o)
 {
 	puts("\n\n");
+	printf("Número de Registro:%d  \n\n",o.n_registro+1);
 	printf("Título:%s  \n\n",o.Titulo);
 	printf("Autores:%s  \n\n",o.Autores);
 	printf("Editora:%s  \n\n",o.Editora);
@@ -196,6 +198,7 @@ void Mostrar_Obra(OBRA o)
 	printf("Quantidade de Exemplares existentes na biblioteca:%d  \n\n",o.N_Exemplares);
 	printf("Quantidade de Exemplares Alugados:%d  \n\n",o.N_Emprestados);
 	printf("Quantas vezes essa obra foi alugada:%d  \n\n",o.Cont);
+	
 }
 
 
@@ -355,12 +358,18 @@ void Reescrever()
 	for(i=0;i<j;i++)
 	Mostrar_Obra(v[i]);
 		
-	printf("Término da mostra de Obras");
+	printf("\n\n\nTÉRMINO DA MOSTRA DE OBRAS\n\n\n");
 		obrasort(v,j);
 		
 		
 	for(i=0;i<j;i++)
-	Mostrar_Obra(v[i]);
+	{
+	v[i].n_registro=i;
+	Mostrar_Obra(v[i]);	
+	}
+	
+	
+	
 	
 	fclose(fp);
 	
