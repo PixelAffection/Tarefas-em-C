@@ -254,22 +254,37 @@ void Listar()
 void Reescrever()
 {
 	int i=0,j=0;
-	OBRA s[10];
+	FILE *fp2;
+	OBRA obra_aux;
+	OBRA v[10];
+	OBRA w[10];
 	rewind(fp);
 	while(1)
 	{
-		if (fread(&s[i],sizeof(OBRA),1,fp)!=1)
+		if (fread(&obra_aux,sizeof(OBRA),1,fp)!=1)
 		{
-		printf("Erro na %d-ésima tentativa",i);	
+		printf("Término do processo de transferência do arquivo para RAM na %d-ésima tentativa",i);	
 		break;
+		}
+		if(obra_aux.StatusO!='*')
+		{
+			//Recuar um Registro no Arquivo
+			fseek(fp,-(long) sizeof(OBRA),SEEK_CUR);
+	
+			if(fread(&v[j],sizeof(OBRA),1,fp)!=1)
+			{
+				printf("Erro no processo de reescrever na %d-ésima tentativa",i);
+			}
+			printf("%d-ésimo elemento do vetor RAM adicionado com sucesso\n\n",j);
+			j++;
 		}
 		i++;
 	}
-	for(j=0;j<i;j++)
-	Mostrar_Obra(s[j]);
 	
 	
-	
+	for(i=0;i<j;i++)
+	Mostrar_Obra(v[i]);
+		
 }
 
 
