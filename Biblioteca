@@ -116,7 +116,9 @@ do	{
 			Copiar_Obra(&tmp,obras[i]);
 			Copiar_Obra(&obras[i],obras[j]);
 			Copiar_Obra(&obras[j],tmp);
+			didswap=1;
 			}
+			
 		}
 	} while(didswap);
 }
