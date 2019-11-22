@@ -264,6 +264,144 @@ char Menu(char *Opcoes[])
  	Mensagem("PESSIONE <ENTER> para continuar	.	.	. "); /*No fim da Listagem*/	
  }
  
+ 
+ void alunosort(OBRA *alunos, int nstrings)
+{
+int i, j;
+int didswap;
+ALUNO tmp;
+
+do	{
+	didswap = 0;
+	for(i = 0; i < nstrings - 1; i++)
+		{
+		j = i + 1;
+		if(dictstrcmp(alunos[i].Nome, alunos[j].Nome) > 0)
+			{
+			Copiar_Aluno(&tmp,alunos[i]);
+			Copiar_Aluno(&alunos[i],alunos[j]);
+			Copiar_Aluno(&alunos[j],tmp);
+			didswap=1;
+			}
+			
+		}
+	} while(didswap);
+}
+
+int dictstrcmp(char *str1, char *str2)
+{
+while(1)
+	{
+	char c1 = *str1++;
+	char c2 = *str2++;
+
+	if(isupper(c1))
+		c1 = tolower(c1);
+
+	if(isupper(c2))
+		c2 = tolower(c2);
+
+	if(c1 != c2)
+		return c1 - c2;
+	if(c1 == '\0')
+		return 0;
+	}
+}
+
+
+
+
+
+
+
+void Copiar_Aluno(ALUNO *dest, ALUNO orig)
+{
+	int i=0;
+
+	
+		dest->Faltas=orig.Faltas;
+		dest->P=orig.Faltas;
+		dest->Nota1=orig.Nota1;
+		dest->Nota2=orig.Nota2;
+		dest->Media=orig.Media;
+		dest->Status=orig.Status;
+		
+		strcpy(dest->Nome,orig.Nome);	
+		strcpy(dest->Curso,orig.Curso);	
+		strcpy(dest->Cadeira,orig.Cadeira);	
+		strcpy(dest->Matricula,orig.Matricula);	
+		strcpy(dest->Matricula,orig.Matricula);	
+			
+	for(i=0;i<4;i++)
+	{
+	dest->Exemplar[i].DD=orig.Exemplar[i].DD;
+	dest->Exemplar[i].DE=orig.Exemplar[i].DE;
+	dest->Exemplar[i].StatusL=orig.Exemplar[i].StatusL;
+	}
+}
+ 
+ 
+ void Reescrever()
+{
+	int i=0,j=0;
+	ALUNO aluno_aux;
+	ALUNO v[10];
+	ALUNO w[10];
+	rewind(fp);
+	while(1)
+	{
+		if (fread(&aluno_aux,sizeof(ALUNO),1,fp)!=1)
+		{
+		printf("Término do processo de transferência do arquivo para RAM na %d-ésima tentativa",i);	
+		break;
+		}
+		if(aluno_aux.StatusO!='*')
+		{
+			//Recuar um Registro no Arquivo
+			fseek(fp,-(long) sizeof(ALUNO),SEEK_CUR);
+	
+			if(fread(&v[j],sizeof(ALUNO),1,fp)!=1)
+			{
+				printf("Erro no processo de reescrever na %d-ésima tentativa",i);
+			}
+			printf("%d-ésimo elemento do vetor RAM adicionado com sucesso\n\n",j);
+			j++;
+		}
+		i++;
+	}
+	
+	
+	for(i=0;i<j;i++)
+	Mostrar_Aluno(v[i]);
+		
+	printf("\n\n\nTÉRMINO DA MOSTRA DE ALUNOS\n\n\n");
+		alunosort(v,j);
+		
+		
+	for(i=0;i<j;i++)
+	{
+	v[i].n_registro=i;
+	Mostrar_Aluno(v[i]);	
+	}
+	
+	
+	fclose(fp);
+	
+	fp=fopen(ARQ,"w+b");
+		if(fp==NULL)
+		{
+			fprintf(stderr,"ERRO FATAL: Impossível Criar Arquivo de Dados\n");
+			exit(1);
+		}
+		
+	for(i=0;i<j;i++)
+	{
+		fwrite(&v[i],sizeof(ALUNO,1,fp);
+	}
+	
+	fflush(fp);	
+}
+ 
   int main()
  {
  	setlocale(LC_ALL, "Portuguese");
@@ -297,3 +435,7 @@ char Menu(char *Opcoes[])
 				 }
 		 }
  }
+ 
+ 
+ 
+ 
