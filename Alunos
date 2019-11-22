@@ -1,13 +1,299 @@
+#include <stdio.h>
+#include <string.h>
+#include <conio.h>
+#include <stdlib.h> /* Função exit*/
+#include <ctype.h> /* Função toupper*/
+#include <locale.h>
+
+#define ARQ "Dados.Dat" /* Arquivo com os dados*/
+
+#define OP_INSERIR '1'
+#define OP_ALTERAR '2'
+#define OP_APAGAR  '3'
+#define OP_LISTAR '4'
+#define OP_PESQUISAR '5'
+
+#define OP_SAIR '0'
+
+#define OP_PESQ_CURSO '1'
+#define OP_PESQ_NOME '2'
+
+
+
+
+char *MainMenu[]={
+	"1. Inserir Aluno",
+	"2. Alterar Aluno",
+	"3. Apagar Aluno",
+	"4. Listar Alunos",
+	"5. Pesquisas",
+	"0. Sair",
+	NULL	/* Acabaram as opções*/
+};
+
+char *PesqMenu[]={
+	"1. Pesquisar por Curso",
+	"2. Pesquisar por Nome",
+	"0. Voltar",
+	NULL	/* Acabaram as opções*/ 	
+};
+
+FILE *fp; 
+
 typedef struct
 {
+	int n_registro;
 	char Nome[30+1];
 	char Curso[30+1];
 	char Cadeira[30+1];
-	int Matricula;
+	char Matricula[30+1];
 	int Faltas;
 	int P;
 	float Nota1;
 	float Nota2;
-	float Media;
+	float Media=0;
 	char Status; 	/*		'*' indica que o registro será apagado		*/
 }ALUNO;
+
+void Mensagem(char *msg);
+
+void Ler_Aluno(ALUNO *a)
+{
+	printf("Nome do Aluno	: ");gets(a->Nome);
+	printf("Curso	: ");gets(a->Curso);
+	printf("Nome da Disciplina	: ");gets(a->Cadeira);
+	printf("Matrícula	: ");gets(a->Matricula);
+	printf("Número de Faltas	: ");scanf("%d",&a->Faltas);fflush(stdin);
+	printf("Período	: ");scanf("%d",&a->P);fflush(stdin);
+	printf("Primeira Nota	: ");scanf("%f",&a->Nota1);fflush(stdin);
+	printf("Segunda Nota	: ");scanf("%f",&a->Nota2);fflush(stdin);	
+	a->Media=((a->Nota1)+(a->Nota2))/2;		
+	a->Status=' ';
+	fflush(stdin);
+}
+
+void Mostrar_Aluno(ALUNO a)
+{
+	puts("\n\n");
+	printf("Número de Registro:%d  \n\n",a.n_registro+1);
+	printf("Nome do Aluno   :%s \n\n",a.Nome);
+	printf("Curso	:%s \n\n",a.Curso);
+	printf("Nome da Disciplina	:%s  \n\n",a.Cadeira);
+	printf("Matrícula	:%s \n\n",a.Matricula);
+	printf("Número de Faltas:%d \n\n",a.Faltas);
+	printf("Período	   : %d \n\n",a.P);
+	printf("Primeira Nota	: %f  \n\n",a.Nota1);
+	printf("Segunda Nota    : %f  \n\n",a.Nota2);
+	printf("Media	: %f  \n\n",a.Media);
+	
+if(a.Media>=7)
+	printf("ALUNO APROVADO\n\n");
+else
+	printf("ALUNO REPROVADO\n\n");
+}
+
+void Adicionar_Aluno (ALUNO a)
+{
+	fseek(fp,0L, SEEK_END);
+	if(fwrite(&a,sizeof(a),1,fp)!=1)
+		Mensagem("adicionar Aluno: Falhou a escrita do registro");
+}
+
+void Mensagem(char *msg)
+{
+	printf(msg);
+	getchar();
+}
+
+void Inic()
+{
+	fp=fopen(ARQ,"r+b"); /*Tentar Abrir*/
+	if(fp==NULL)
+	{
+		fp=fopen(ARQ,"w+b");
+		if(fp==NULL)
+		{
+			fprintf(stderr,"ERRO FATAL: Impossível Criar Arquivo de Dados\n");
+			exit(1);
+		}
+	}
+}
+
+char Menu(char *Opcoes[])
+ {
+ 	int i;
+ 	char ch;
+ 	
+ 	while(1)
+ 	{  /*Cls*/
+ 		printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+ 		for(i=0;Opcoes[i]!=NULL; i++)
+ 		printf("\t\t%s\n\n",Opcoes[i]);
+ 		
+ 	printf("\n\n\tOpção: ");
+ 	ch=getchar(); fflush(stdin);
+ 	for(i=0; Opcoes[i]!=NULL; i++)
+ 	if(Opcoes[i][0]==ch)
+ 		return ch;
+	 }
+ }
+ 
+ void Inserir_Aluno()
+ {
+ 	ALUNO x;
+ 	Ler_Aluno(&x);
+ 	Adicionar_Aluno(x);
+ }
+ 
+ void Alterar_Aluno()
+ {
+ 	ALUNO x;
+ 	long int n_reg;
+	printf("Qual o Nº do Registro: ");
+	scanf("%ld", &n_reg);fflush(stdin);
+	if(fseek(fp, (n_reg-1)*sizeof(ALUNO),SEEK_SET)!=0)
+		{
+		Mensagem("Registro Inexistente ou Problemas no Posicionamento!!!");
+		return;	
+			
+		}
+	if(fread(&x,sizeof(ALUNO),1,fp)!=1)
+	{
+		Mensagem("Problemas na leitura do Registro!!!");
+		return;
+	}
+	if(x.Status=='*')
+	{
+		Mensagem("Um Registro Apagado não pode ser alterado!!!\n\n");
+		return;
+	}
+		
+	printf("\n\nDados Atuais\n\n");
+	Mostrar_Aluno(x);
+	printf("\n\nNovos Dados\n\n");
+	Ler_Aluno(&x);
+	
+	//Recuar um Registro no Arquivo
+	fseek(fp,-(long) sizeof(ALUNO),SEEK_CUR);
+	//Reescrever o Registro;
+	fwrite(&x,sizeof(ALUNO),1,fp);
+	fflush(fp); /*Despejar os Dados no Disco Rígido*/	 
+ }
+ 
+ 
+ void Apagar_Aluno()
+ {
+ 	ALUNO x;
+ 	long int n_reg;
+ 	char resp;
+ 	
+ 	printf("Qual o Nº do Registro:");
+ 	scanf("%ld", &n_reg);fflush(stdin);
+ 	
+ 	if(fseek(fp, (n_reg-1)*sizeof(ALUNO),SEEK_SET)!=0)
+		{
+		Mensagem("Registro Inexistente ou Problemas no Posicionamento!!!");
+		return;	
+			
+		}
+	if(fread(&x,sizeof(ALUNO),1,fp)!=1)
+	{
+		Mensagem("Problemas na leitura do Registro!!!");
+		return;
+	}
+	if(x.Status=='*')
+	{
+		Mensagem("O registro já está apagado!!!\n\n");
+		return;
+	}
+	
+	printf("\n\nDados Atuais\n\n");
+	Mostrar_Aluno(x);
+	
+	printf("\n\nApagar o Registro (s/n)???: "); resp=getchar(); fflush(stdin);
+	if (toupper(resp)!='S') return;
+	
+	x.Status='*';
+		//Recuar um Registro no Arquivo
+	fseek(fp,-(long) sizeof(ALUNO),SEEK_CUR);
+	//Reescrever o Registro;
+	fwrite(&x,sizeof(ALUNO),1,fp);
+	fflush(fp); /*Despejar os Dados no Disco Rígido*/	
+	
+ }
+ 
+ 
+ void Listar()
+ {
+ 	long int N_Linhas=0;
+ 	ALUNO reg;
+ 	rewind(fp);
+ 	while(1)
+ 	{
+ 		if (fread(&reg,sizeof(reg),1,fp)!=1)break; /*Sair do Laço*/
+ 		if (reg.Status=='*')continue; /*Passa ao próximo registro*/
+ 		Mostrar_Aluno(reg);
+ 		N_Linhas++;
+ 		if(N_Linhas%20==0)
+ 		Mensagem("PESSIONE <ENTER> para continuar	.	.	. ");
+	 }
+	Mensagem("PESSIONE <ENTER> para continuar	.	.	. "); /*No fim da Listagem*/ 
+ }
+ 
+ void Pesquisar_Nome(char *s)
+ {
+ 	ALUNO reg;
+ 	rewind(fp);
+ 	
+ 	while(fread(&reg,sizeof(ALUNO),1,fp))
+ 	if(reg.Status!='*'&&strstr(reg.Nome,s))
+ 		Mostrar_Aluno(reg);
+ 		
+ 	Mensagem("PESSIONE <ENTER> para continuar	.	.	. "); /*No fim da Listagem*/	
+ }
+ 
+ void Pesquisar_Curso(char *s)
+ {
+ 	ALUNO reg;
+ 	rewind(fp);
+ 	
+ 	while(fread(&reg,sizeof(ALUNO),1,fp))
+ 	if(reg.Status!='*'&&strstr(reg.Nome,s))
+ 		Mostrar_Aluno(reg);
+ 		
+ 	Mensagem("PESSIONE <ENTER> para continuar	.	.	. "); /*No fim da Listagem*/	
+ }
+ 
+  int main()
+ {
+ 	setlocale(LC_ALL, "Portuguese");
+ 	char Opcao;
+ 	Inic();
+ 	while((Opcao=Menu(MainMenu))!=OP_SAIR)
+ 		switch(Opcao)
+ 		{
+ 			case OP_INSERIR: Inserir_Aluno();break;
+ 			case OP_ALTERAR: Alterar_Aluno();break;
+ 			case OP_APAGAR:  Apagar_Aluno(); break;
+ 			case OP_LISTAR:  Listar(); break;
+ 			case OP_PESQUISAR:
+ 				while((Opcao=Menu(PesqMenu))!=OP_SAIR)
+ 				switch(Opcao)
+ 				{
+ 					case OP_PESQ_CURSO:
+ 						{
+ 							char string[BUFSIZ+1];
+							printf("Qual o Curso a Procurar: ");
+							gets(string);fflush(stdin);
+							Pesquisar_Curso(string);
+					 	}
+					case OP_PESQ_NOME:
+						{
+							char string[BUFSIZ+1];
+							printf("Qual o Nome a Procurar: ");
+							gets(string);fflush(stdin);
+							Pesquisar_Nome(string);
+						}
+				 }
+		 }
+ }
