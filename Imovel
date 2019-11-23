@@ -141,7 +141,7 @@ void Reescrever()
 	{
 		if (fread(&imovel_aux,sizeof(IMOVEL),1,fp)!=1)
 		{
-		printf("Término do processo de transferência do arquivo para RAM na %d-ésima tentativa",i);	
+		//printf("Término do processo de transferência do arquivo para RAM na %d-ésima tentativa",i);	
 		break;
 		}
 		if(imovel_aux.Status!='*')
@@ -151,28 +151,31 @@ void Reescrever()
 	
 			if(fread(&v[j],sizeof(IMOVEL),1,fp)!=1)
 			{
-				printf("Erro no processo de reescrever na %d-ésima tentativa",i);
+		//		printf("Erro no processo de reescrever na %d-ésima tentativa",i);
 			}
-			printf("%d-ésimo elemento do vetor RAM adicionado com sucesso\n\n",j);
+		//	printf("%d-ésimo elemento do vetor RAM adicionado com sucesso\n\n",j);
 			j++;
 		}
 		i++;
 	}
 	
-	
+/*	
 	for(i=0;i<j;i++)
 	Mostrar_Imovel(v[i]);
 		
 	printf("\n\n\nTÉRMINO DA MOSTRA DE IMOVELS\n\n\n");
+	
+*/
 		imovelsort(v,j);
 		
 		
+/*
 	for(i=0;i<j;i++)
 	{
 	v[i].n_registro=i;
 	Mostrar_Imovel(v[i]);	
 	}
-	
+*/	
 	
 	
 	
