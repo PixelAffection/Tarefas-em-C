@@ -15,8 +15,11 @@
 
 #define OP_SAIR '0'
 
-#define OP_PESQ_IDADE '1'
-#define OP_PESQ_NOME '2'
+#define OP_PESQ_AREA '1'
+#define OP_PESQ_PRECOS '2'
+#define OP_PESQ_BAIRRO '3'
+#define OP_PESQ_CASA '4'
+#define OP_PESQ_APTO '5'
 
 char *MainMenu[]={
 	"1. Inserir Imóvel",
@@ -374,7 +377,7 @@ void Pesquisar_Area (float ini, float fim)
 	Mensagem("PESSIONE <ENTER> para continuar	.	.	. "); /*No fim da Listagem*/		
  } 
 
- void Pesquisar_Precos (float ini, float fim)
+ void Pesquisar_Preco (float ini, float fim)
 {
 	IMOVEL reg;
 	rewind(fp);
@@ -422,5 +425,65 @@ void Pesquisar_Apto()
  	Mensagem("PESSIONE <ENTER> para continuar	.	.	. "); /*No fim da Listagem*/	
 }
 
-
+int main()
+ {
+ 	
+ 	setlocale(LC_ALL, "Portuguese");
+ 	char Opcao;
+ 	Inic();
+ 	Reescrever();
+ 	while((Opcao=Menu(MainMenu))!=OP_SAIR)
+ 		switch(Opcao)
+ 		{
+ 			
+			case OP_INSERIR: Inserir_Imovel();break;
+ 			case OP_ALTERAR: Alterar_Imovel();break;
+ 			case OP_APAGAR:  Apagar_Imovel(); break;
+ 			case OP_LISTAR:  Listar(); break;
+ 			case OP_PESQUISAR:
+ 				while((Opcao=Menu(PesqMenu))!=OP_SAIR)
+ 				switch(Opcao)
+ 				{
+ 					case OP_PESQ_AREA:
+ 						{
+ 							int n1,n2;
+ 							printf("Qual o intervalo áreas totais desejado?");
+ 							scanf("%d%d",&n1,&n2);fflush(stdin);
+ 							Pesquisar_Area(n1,n2);
+ 							break; 
+					 	}
+					 	
+						case OP_PESQ_PRECOS:
+ 						{
+ 							int n1,n2;
+ 							printf("Qual o intervalo de preços desejado?");
+ 							scanf("%d%d",&n1,&n2);fflush(stdin);
+ 							Pesquisar_Preco(n1,n2);
+ 							break; 
+					 	}
+						 	
+					case OP_PESQ_BAIRRO:
+						{
+							char string[BUFSIZ+1];
+							printf("Qual o nome do Bairro a ser pesquisado?");
+							gets(string);fflush(stdin);
+							Pesquisar_Bairro(string);
+						}
+						
+					case OP_PESQ_CASA:
+						{
+							puts("Segue a lista de Casas\n\n\n");
+							Pesquisar_Casa();
+						}
+						
+					case OP_PESQ_APTO:
+						{
+						}
+						puts("Segue a lista de Apartamentos\n\n\n");
+						Pesquisar_Apto()
+						
+						}
+				 }
+		 }
+ }
 
