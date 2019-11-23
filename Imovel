@@ -1,11 +1,112 @@
+#include <stdio.h>
+#include <string.h>
+#include <conio.h>
+#include <stdlib.h> /* Função exit*/
+#include <ctype.h> /* Função toupper*/
+#include <locale.h>
+
+#define ARQ "Dados.Dat" /* Arquivo com os dados*/
+
+#define OP_INSERIR '1'
+#define OP_ALTERAR '2'
+#define OP_APAGAR  '3'
+#define OP_LISTAR '4'
+#define OP_PESQUISAR '5'
+
+#define OP_SAIR '0'
+
+#define OP_PESQ_IDADE '1'
+#define OP_PESQ_NOME '2'
+
+char *MainMenu[]={
+	"1. Inserir Imóvel",
+	"2. Alterar Imóvel",
+	"3. Apagar Imóvel",
+	"4. Listar Imóvels",
+	"5. Pesquisas",
+	"0. Sair",
+	NULL	/* Acabaram as opções*/
+};
+
+char *PesqMenu[]={
+	"1. Listar Apartamentos",
+	"2. Listar Casas",
+	"3. Listar por Bairro",
+	"4. Listar por Intervalo de Área",
+	"5. Listar por Intervalo  de Preço",
+	"0. Voltar",
+	NULL	/* Acabaram as opções*/ 	
+};
+
+
+FILE *fp; /*Variável Global pois é útil ao longo do programa*/
+
+
 typedef struct
 {
+	int n_registro;
 	char Identificacao[4+1];
 	char Bairro[30+1];
 	char Endereco[30+1];
 	int n_quartos;
-	float Salario;
 	float Area;
 	float Aluguel;
 	char Status; 	/*		'*' indica que o registro será apagado		*/
 }IMOVEL;
+
+
+void Mensagem(char *msg);
+
+
+void Ler_Imovel(IMOVEL *i)
+{
+	int op;
+	
+	printf("É uma Casa ou um Apartamento?\n\n");
+	puts("Digite 1 para Casa\n\n");
+	puts("Digite 2 para Apartamento\n\n");
+	scanf("%d",&op);
+	
+	switch(op)
+	{
+		case 1: i->Identificacao="CASA";break;
+		case 2: i->Identificacao="APTO";break;
+		default: puts("Opção inválida: Tente novamente, digitando 1 ou 2.") return;
+	}
+	printf("Número de quartos	: ");scanf("%d",&i->n_quartos);fflush(stdin);
+	printf("Área total	: ");scanf("%f",&i->Area);fflush(stdin);
+	printf("Bairro	: ");gets(i->Bairro);fflush(stdin);
+	printf("Endereço	: ");gets(i->Endereco]);fflush(stdin);
+	printf("Preço do Aluguel");scanf("%f",&i->Aluguel);fflush(stdin);
+	i->Status=' ';
+	fflush(stdin);
+}
+
+void Mostrar_Imovel(IMOVEL i)
+{
+	puts("\n\n");
+	printf("Número de Registro:%d  \n\n",o.n_registro+1);
+	printf("Número de Registro:%d	\n\n",i.n_registro);
+	printf("Identificação (Casa ou Apto.):%s	\n\n",i.Identificacao);
+	printf("Bairro:%s	\n\n",i.Bairro);
+	printf("Endereço:%s	\n\n",i.Endereco);
+	printf("Número de Quartos:%d	\n\n;",i.n_quartos);
+	printf("Área total:%f	\n\n",i.Area);
+	printf("Aluguel:%f	\n\n",i.Aluguel);
+}
+
+void Adicionar_Imovel (IMOVEL i)
+{
+	fseek(fp,0L, SEEK_END);
+	if(fwrite(&i,sizeof(i),1,fp)!=1)
+		Mensagem("adicionar Pessoa: Falhou a escrita do registro");
+}
+
+void Mensagem(char *msg)
+{
+	printf(msg);
+	getchar();
+}
+
+
+
