@@ -12,6 +12,9 @@
 #define OP_APAGAR  '3'
 #define OP_LISTAR '4'
 #define OP_PESQUISAR '5'
+#define OP_LISTAR_REPROVADOS '6'
+#define OP_LISTAR_APROVADOS '7'
+
 
 #define OP_SAIR '0'
 
@@ -27,6 +30,8 @@ char *MainMenu[]={
 	"3. Apagar Aluno",
 	"4. Listar Alunos",
 	"5. Pesquisas",
+	"6. Listar Alunos Reprovados",
+	"7. Listar Alunos Aprovados",
 	"0. Sair",
 	NULL	/* Acabaram as opções*/
 };
@@ -258,14 +263,55 @@ char Menu(char *Opcoes[])
  	rewind(fp);
  	
  	while(fread(&reg,sizeof(ALUNO),1,fp))
- 	if(reg.Status!='*'&&strstr(reg.Nome,s))
+ 	if(reg.Status!='*'&&strstr(reg.Curso,s))
  		Mostrar_Aluno(reg);
  		
  	Mensagem("PESSIONE <ENTER> para continuar	.	.	. "); /*No fim da Listagem*/	
  }
  
  
- void alunosort(OBRA *alunos, int nstrings)
+ int dictstrcmp(char *str1, char *str2)
+{
+while(1)
+	{
+	char c1 = *str1++;
+	char c2 = *str2++;
+
+	if(isupper(c1))
+		c1 = tolower(c1);
+
+	if(isupper(c2))
+		c2 = tolower(c2);
+
+	if(c1 != c2)
+		return c1 - c2;
+	if(c1 == '\0')
+		return 0;
+	}
+}
+
+
+ void Copiar_Aluno(ALUNO *dest, ALUNO orig)
+{
+	int i=0;
+
+	
+		dest->Faltas=orig.Faltas;
+		dest->P=orig.Faltas;
+		dest->Nota1=orig.Nota1;
+		dest->Nota2=orig.Nota2;
+		dest->Media=orig.Media;
+		dest->Status=orig.Status;
+		
+		strcpy(dest->Nome,orig.Nome);	
+		strcpy(dest->Curso,orig.Curso);	
+		strcpy(dest->Cadeira,orig.Cadeira);	
+		strcpy(dest->Matricula,orig.Matricula);	
+		strcpy(dest->Matricula,orig.Matricula);	
+			
+}
+ 
+ void alunosort(ALUNO *alunos, int nstrings)
 {
 int i, j;
 int didswap;
@@ -288,25 +334,6 @@ do	{
 	} while(didswap);
 }
 
-int dictstrcmp(char *str1, char *str2)
-{
-while(1)
-	{
-	char c1 = *str1++;
-	char c2 = *str2++;
-
-	if(isupper(c1))
-		c1 = tolower(c1);
-
-	if(isupper(c2))
-		c2 = tolower(c2);
-
-	if(c1 != c2)
-		return c1 - c2;
-	if(c1 == '\0')
-		return 0;
-	}
-}
 
 
 
@@ -314,31 +341,8 @@ while(1)
 
 
 
-void Copiar_Aluno(ALUNO *dest, ALUNO orig)
-{
-	int i=0;
 
-	
-		dest->Faltas=orig.Faltas;
-		dest->P=orig.Faltas;
-		dest->Nota1=orig.Nota1;
-		dest->Nota2=orig.Nota2;
-		dest->Media=orig.Media;
-		dest->Status=orig.Status;
-		
-		strcpy(dest->Nome,orig.Nome);	
-		strcpy(dest->Curso,orig.Curso);	
-		strcpy(dest->Cadeira,orig.Cadeira);	
-		strcpy(dest->Matricula,orig.Matricula);	
-		strcpy(dest->Matricula,orig.Matricula);	
-			
-	for(i=0;i<4;i++)
-	{
-	dest->Exemplar[i].DD=orig.Exemplar[i].DD;
-	dest->Exemplar[i].DE=orig.Exemplar[i].DE;
-	dest->Exemplar[i].StatusL=orig.Exemplar[i].StatusL;
-	}
-}
+
  
  
  void Reescrever()
@@ -355,7 +359,7 @@ void Copiar_Aluno(ALUNO *dest, ALUNO orig)
 		printf("Término do processo de transferência do arquivo para RAM na %d-ésima tentativa",i);	
 		break;
 		}
-		if(aluno_aux.StatusO!='*')
+		if(aluno_aux.Status!='*')
 		{
 			//Recuar um Registro no Arquivo
 			fseek(fp,-(long) sizeof(ALUNO),SEEK_CUR);
@@ -396,17 +400,90 @@ void Copiar_Aluno(ALUNO *dest, ALUNO orig)
 		
 	for(i=0;i<j;i++)
 	{
-		fwrite(&v[i],sizeof(ALUNO,1,fp);
+		fwrite(&v[i],sizeof(ALUNO),1,fp);
 	}
 	
 	fflush(fp);	
 }
- 
+
+void Listar_Reprovados()
+{
+	int i=0,j=0;
+	ALUNO aluno_aux;
+	ALUNO v[10];
+	ALUNO w[10];
+	rewind(fp);
+	while(1)
+	{
+		if (fread(&aluno_aux,sizeof(ALUNO),1,fp)!=1)
+		{
+		printf("Término do processo de transferência do arquivo para RAM na %d-ésima tentativa",i);	
+		break;
+		}
+		if(aluno_aux.Status!='*'&&!(aluno_aux.Media>=7))
+		{
+			//Recuar um Registro no Arquivo
+			fseek(fp,-(long) sizeof(ALUNO),SEEK_CUR);
+	
+			if(fread(&v[j],sizeof(ALUNO),1,fp)!=1)
+			{
+				printf("Erro no processo de reescrever na %d-ésima tentativa",i);
+			}
+			printf("%d-ésimo elemento do vetor RAM adicionado com sucesso\n\n",j);
+			j++;
+		}
+		i++;
+		
+		
+	}
+	
+	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+	for(i=0;i<j;i++)
+	Mostrar_Aluno(v[i]);
+	getchar();
+}
+void Listar_Aprovados()
+{
+	int i=0,j=0;
+	ALUNO aluno_aux;
+	ALUNO v[10];
+	ALUNO w[10];
+	rewind(fp);
+	while(1)
+	{
+		if (fread(&aluno_aux,sizeof(ALUNO),1,fp)!=1)
+		{
+		printf("Término do processo de transferência do arquivo para RAM na %d-ésima tentativa",i);	
+		break;
+		}
+		if(aluno_aux.Status!='*'&&(aluno_aux.Media>=7))
+		{
+			//Recuar um Registro no Arquivo
+			fseek(fp,-(long) sizeof(ALUNO),SEEK_CUR);
+	
+			if(fread(&v[j],sizeof(ALUNO),1,fp)!=1)
+			{
+				printf("Erro no processo de reescrever na %d-ésima tentativa",i);
+			}
+			printf("%d-ésimo elemento do vetor RAM adicionado com sucesso\n\n",j);
+			j++;
+		}
+		i++;
+		
+		
+	}
+	
+	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+	for(i=0;i<j;i++)
+	Mostrar_Aluno(v[i]);
+	getchar();
+}
   int main()
  {
  	setlocale(LC_ALL, "Portuguese");
  	char Opcao;
  	Inic();
+ 	Reescrever();
  	while((Opcao=Menu(MainMenu))!=OP_SAIR)
  		switch(Opcao)
  		{
@@ -414,6 +491,8 @@ void Copiar_Aluno(ALUNO *dest, ALUNO orig)
  			case OP_ALTERAR: Alterar_Aluno();break;
  			case OP_APAGAR:  Apagar_Aluno(); break;
  			case OP_LISTAR:  Listar(); break;
+ 			case OP_LISTAR_REPROVADOS: Listar_Reprovados(); break;
+			case OP_LISTAR_APROVADOS: Listar_Aprovados(); break;
  			case OP_PESQUISAR:
  				while((Opcao=Menu(PesqMenu))!=OP_SAIR)
  				switch(Opcao)
@@ -423,19 +502,16 @@ void Copiar_Aluno(ALUNO *dest, ALUNO orig)
  							char string[BUFSIZ+1];
 							printf("Qual o Curso a Procurar: ");
 							gets(string);fflush(stdin);
-							Pesquisar_Curso(string);
+							Pesquisar_Curso(string);break;
 					 	}
 					case OP_PESQ_NOME:
 						{
 							char string[BUFSIZ+1];
 							printf("Qual o Nome a Procurar: ");
 							gets(string);fflush(stdin);
-							Pesquisar_Nome(string);
+							Pesquisar_Nome(string);break;
 						}
 				 }
 		 }
  }
- 
- 
- 
  
