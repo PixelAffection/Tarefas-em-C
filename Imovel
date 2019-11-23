@@ -54,6 +54,25 @@ typedef struct
 	char Status; 	/*		'*' indica que o registro será apagado		*/
 }IMOVEL;
 
+int dictstrcmp(char *str1, char *str2)
+{
+while(1)
+	{
+	char c1 = *str1++;
+	char c2 = *str2++;
+
+	if(isupper(c1))
+		c1 = tolower(c1);
+
+	if(isupper(c2))
+		c2 = tolower(c2);
+
+	if(c1 != c2)
+		return c1 - c2;
+	if(c1 == '\0')
+		return 0;
+	}
+}
 
 void Copiar_Imovel(IMOVEL *dest, IMOVEL orig)
 {	
@@ -67,6 +86,95 @@ void Copiar_Imovel(IMOVEL *dest, IMOVEL orig)
 	strcpy(dest->Identificacao,orig.Identificacao);
 
 }
+
+void imovelsort(IMOVEL *imoveis, int nstrings)
+{
+int i, j;
+int didswap;
+IMOVEL tmp;
+
+do	{
+	didswap = 0;
+	for(i = 0; i < nstrings - 1; i++)
+		{
+		j = i + 1;
+		if(dictstrcmp(imoveis[i].Titulo, imoveis[j].Titulo) > 0)
+			{
+			Copiar_Imovel(&tmp,imoveis[i]);
+			Copiar_Imovel(&imoveis[i],imoveis[j]);
+			Copiar_Imovel(&imoveis[j],tmp);
+			didswap=1;
+			}
+			
+		}
+	} while(didswap);
+}
+
+
+void Reescrever()
+{
+	int i=0,j=0;
+	IMOVEL imovel_aux;
+	IMOVEL v[10];
+	IMOVEL w[10];
+	rewind(fp);
+	while(1)
+	{
+		if (fread(&imovel_aux,sizeof(IMOVEL),1,fp)!=1)
+		{
+		printf("Término do processo de transferência do arquivo para RAM na %d-ésima tentativa",i);	
+		break;
+		}
+		if(imovel_aux.Status!='*')
+		{
+			//Recuar um Registro no Arquivo
+			fseek(fp,-(long) sizeof(IMOVEL),SEEK_CUR);
+	
+			if(fread(&v[j],sizeof(IMOVEL),1,fp)!=1)
+			{
+				printf("Erro no processo de reescrever na %d-ésima tentativa",i);
+			}
+			printf("%d-ésimo elemento do vetor RAM adicionado com sucesso\n\n",j);
+			j++;
+		}
+		i++;
+	}
+	
+	
+	for(i=0;i<j;i++)
+	Mostrar_Imovel(v[i]);
+		
+	printf("\n\n\nTÉRMINO DA MOSTRA DE IMOVELS\n\n\n");
+		imovelsort(v,j);
+		
+		
+	for(i=0;i<j;i++)
+	{
+	v[i].n_registro=i;
+	Mostrar_Imovel(v[i]);	
+	}
+	
+	
+	
+	
+	fclose(fp);
+	
+	fp=fopen(ARQ,"w+b");
+		if(fp==NULL)
+		{
+			fprintf(stderr,"ERRO FATAL: Impossível Criar Arquivo de Dados\n");
+			exit(1);
+		}
+		
+	for(i=0;i<j;i++)
+	{
+		fwrite(&v[i],sizeof(IMOVEL),1,fp);
+	}
+	
+	fflush(fp);	
+}
+
+
 
 void Mensagem(char *msg);
 
@@ -313,5 +421,6 @@ void Pesquisar_Apto()
  		
  	Mensagem("PESSIONE <ENTER> para continuar	.	.	. "); /*No fim da Listagem*/	
 }
+
 
 
