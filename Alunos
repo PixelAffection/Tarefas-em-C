@@ -356,7 +356,7 @@ do	{
 	{
 		if (fread(&aluno_aux,sizeof(ALUNO),1,fp)!=1)
 		{
-		printf("Término do processo de transferência do arquivo para RAM na %d-ésima tentativa",i);	
+	//	printf("Término do processo de transferência do arquivo para RAM na %d-ésima tentativa",i);	
 		break;
 		}
 		if(aluno_aux.Status!='*')
@@ -366,26 +366,27 @@ do	{
 	
 			if(fread(&v[j],sizeof(ALUNO),1,fp)!=1)
 			{
-				printf("Erro no processo de reescrever na %d-ésima tentativa",i);
+			//	printf("Erro no processo de reescrever na %d-ésima tentativa",i);
 			}
-			printf("%d-ésimo elemento do vetor RAM adicionado com sucesso\n\n",j);
+			//printf("%d-ésimo elemento do vetor RAM adicionado com sucesso\n\n",j);
 			j++;
 		}
 		i++;
 	}
 	
-	
+	/*
 	for(i=0;i<j;i++)
 	Mostrar_Aluno(v[i]);
 		
 	printf("\n\n\nTÉRMINO DA MOSTRA DE ALUNOS\n\n\n");
+	*/
 		alunosort(v,j);
 		
 		
 	for(i=0;i<j;i++)
 	{
 	v[i].n_registro=i;
-	Mostrar_Aluno(v[i]);	
+//	Mostrar_Aluno(v[i]);	
 	}
 	
 	
@@ -514,4 +515,3 @@ void Listar_Aprovados()
 				 }
 		 }
  }
- 
