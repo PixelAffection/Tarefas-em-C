@@ -55,6 +55,19 @@ typedef struct
 }IMOVEL;
 
 
+void Copiar_Imovel(IMOVEL *dest, IMOVEL orig)
+{	
+	dest->n_quartos=orig.n_quartos;
+	dest->Aluguel = orig.Aluguel ;
+	dest->Area = orig.Area ;
+	dest->Status = orig.Status ;
+	
+	strcpy(dest->Bairro,orig.Bairro);
+	strcpy(dest->Endereco,orig.Endereco);
+	strcpy(dest->Identificacao,orig.Identificacao);
+
+}
+
 void Mensagem(char *msg);
 
 
@@ -108,5 +121,197 @@ void Mensagem(char *msg)
 	getchar();
 }
 
+void Inic()
+{
+	fp=fopen(ARQ,"r+b"); /*Tentar Abrir*/
+	if(fp==NULL)
+	{
+		fp=fopen(ARQ,"w+b");
+		if(fp==NULL)
+		{
+			fprintf(stderr,"ERRO FATAL: Impossível Criar Arquivo de Dados\n");
+			exit(1);
+		}
+	}
+}
+
+char Menu(char *Opcoes[])
+ {
+ 	int i;
+ 	char ch;
+ 	
+ 	while(1)
+ 	{  /*Cls*/
+ 		printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+ 		for(i=0;Opcoes[i]!=NULL; i++)
+ 		printf("\t\t%s\n\n",Opcoes[i]);
+ 		
+ 	printf("\n\n\tOpção: ");
+ 	ch=getchar(); fflush(stdin);
+ 	for(i=0; Opcoes[i]!=NULL; i++)
+ 	if(Opcoes[i][0]==ch)
+ 		return ch;
+	 }
+ }
+
+void Inserir_Imovel()
+ {
+ 	IMOVEL x;
+ 	Ler_Imovel(&x);
+ 	Adicionar_Imovel(x);
+ }
+
+void Alterar_Imovel()
+ {
+ 	IMOVEL x;
+ 	long int n_reg;
+	printf("Qual o Nº do Registro: ");
+	scanf("%ld", &n_reg);fflush(stdin);
+	if(fseek(fp, (n_reg-1)*sizeof(IMOVEL),SEEK_SET)!=0)
+		{
+		Mensagem("Registro Inexistente ou Problemas no Posicionamento!!!");
+		return;	
+			
+		}
+	if(fread(&x,sizeof(IMOVEL),1,fp)!=1)
+	{
+		Mensagem("Problemas na leitura do Registro!!!");
+		return;
+	}
+	if(x.Status=='*')
+	{
+		Mensagem("Um Registro Apagado não pode ser alterado!!!\n\n");
+		return;
+	}
+		
+	printf("\n\nDados Atuais\n\n");
+	Mostrar_Imovel(x);
+	printf("\n\nNovos Dados\n\n");
+	Ler_Imovel(&x);
+	
+	//Recuar um Registro no Arquivo
+	fseek(fp,-(long) sizeof(IMOVEL),SEEK_CUR);
+	//Reescrever o Registro;
+	fwrite(&x,sizeof(IMOVEL),1,fp);
+	fflush(fp); /*Despejar os Dados no Disco Rígido*/	 
+ }
+
+ void Apagar_Imovel()
+ {
+ 	IMOVEL x;
+ 	long int n_reg;
+ 	char resp;
+ 	
+ 	printf("Qual o Nº do Registro:");
+ 	scanf("%ld", &n_reg);fflush(stdin);
+ 	
+ 	if(fseek(fp, (n_reg-1)*sizeof(IMOVEL),SEEK_SET)!=0)
+		{
+		Mensagem("Registro Inexistente ou Problemas no Posicionamento!!!");
+		return;	
+			
+		}
+	if(fread(&x,sizeof(IMOVEL),1,fp)!=1)
+	{
+		Mensagem("Problemas na leitura do Registro!!!");
+		return;
+	}
+	if(x.Status=='*')
+	{
+		Mensagem("O registro já está apagado!!!\n\n");
+		return;
+	}
+	
+	printf("\n\nDados Atuais\n\n");
+	Mostrar_Imovel(x);
+	
+	printf("\n\nApagar o Registro (s/n)???: "); resp=getchar(); fflush(stdin);
+	if (toupper(resp)!='S') return;
+	
+	x.Status='*';
+		//Recuar um Registro no Arquivo
+	fseek(fp,-(long) sizeof(IMOVEL),SEEK_CUR);
+	//Reescrever o Registro;
+	fwrite(&x,sizeof(IMOVEL),1,fp);
+	fflush(fp); /*Despejar os Dados no Disco Rígido*/	
+	
+ }
+
+ void Listar()
+ {
+ 	long int N_Linhas=0;
+ 	IMOVEL reg;
+ 	rewind(fp);
+ 	while(1)
+ 	{
+ 		if (fread(&reg,sizeof(reg),1,fp)!=1)break; /*Sair do Laço*/
+ 		if (reg.Status=='*')continue; /*Passa ao próximo registro*/
+ 		Mostrar_Imovel(reg);
+ 		N_Linhas++;
+ 		if(N_Linhas%20==0)
+ 		Mensagem("PESSIONE <ENTER> para continuar	.	.	. ");
+	 }
+	Mensagem("PESSIONE <ENTER> para continuar	.	.	. "); /*No fim da Listagem*/ 
+ }
+
+void Pesquisar_Area (float ini, float fim)
+{
+	IMOVEL reg;
+	rewind(fp);
+	
+	while(fread(&reg,sizeof(IMOVEL),1,fp))
+	if(reg.Status!='*' && reg.Area>=ini && reg.Area<=fim)
+		Mostrar_Imovel(reg);
+	
+	Mensagem("PESSIONE <ENTER> para continuar	.	.	. "); /*No fim da Listagem*/		
+ } 
+
+ void Pesquisar_Precos (float ini, float fim)
+{
+	IMOVEL reg;
+	rewind(fp);
+	
+	while(fread(&reg,sizeof(IMOVEL),1,fp))
+	if(reg.Status!='*' && reg.Aluguel>=ini && reg.Aluguel<=fim)
+		Mostrar_Imovel(reg);
+	
+	Mensagem("PESSIONE <ENTER> para continuar	.	.	. "); /*No fim da Listagem*/		
+ } 
+ 
+  void Pesquisar_Bairro(char *s)
+ {
+ 	IMOVEL reg;
+ 	rewind(fp);
+ 	
+ 	while(fread(&reg,sizeof(IMOVEL),1,fp))
+ 	if(reg.Status!='*'&&strstr(reg.Bairro,s))
+ 		Mostrar_Imovel(reg);
+ 		
+ 	Mensagem("PESSIONE <ENTER> para continuar	.	.	. "); /*No fim da Listagem*/	
+ }
+ 
+void Pesquisar_Casa()
+{
+	IMOVEL reg;
+ 	rewind(fp);
+ 	
+ 	while(fread(&reg,sizeof(IMOVEL),1,fp))
+ 	if(reg.Status!='*'&&(strcmp(reg.Identificacao,"CASA"==0)))
+ 		Mostrar_Imovel(reg);
+ 		
+ 	Mensagem("PESSIONE <ENTER> para continuar	.	.	. "); /*No fim da Listagem*/	
+}
+
+void Pesquisar_Apto()
+{
+	IMOVEL reg;
+ 	rewind(fp);
+ 	
+ 	while(fread(&reg,sizeof(IMOVEL),1,fp))
+ 	if(reg.Status!='*'&&(strcmp(reg.Identificacao,"APTO"==0)))
+ 		Mostrar_Imovel(reg);
+ 		
+ 	Mensagem("PESSIONE <ENTER> para continuar	.	.	. "); /*No fim da Listagem*/	
+}
 
 
