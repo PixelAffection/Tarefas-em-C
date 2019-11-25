@@ -68,8 +68,8 @@ void Mostrar_Imovel(IMOVEL i)
 	printf("Bairro:%s	\n\n",i.Bairro);
 	printf("Endereço:%s	\n\n",i.Endereco);
 	printf("Número de Quartos:%d	\n\n",i.n_quartos);
-	printf("Área total:%f	\n\n",i.Area);
-	printf("Aluguel:%f	\n\n",i.Aluguel);
+	printf("Área total:%.2f	\n\n",i.Area);
+	printf("Aluguel:%.2f	\n\n",i.Aluguel);
 }
 
 
@@ -169,13 +169,13 @@ void Reescrever()
 		imovelsort(v,j);
 		
 		
-/*
+
 	for(i=0;i<j;i++)
 	{
 	v[i].n_registro=i;
-	Mostrar_Imovel(v[i]);	
+//	Mostrar_Imovel(v[i]);	
 	}
-*/	
+
 	
 	
 	
@@ -495,6 +495,4 @@ int main()
 						
 						}
 				 }
-		 }
- 
-
+		 } 
