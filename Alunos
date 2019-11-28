@@ -515,3 +515,20 @@ void Listar_Aprovados()
 				 }
 		 }
  }
+
+//Referências:
+
+/*
+
+"Gest.c", código resposta da questão 1 do capítulo 11 do livro "Linguagem C"(pág. 387-pág. 391) do autor Luis Damas, por Luis Damas. 
+Foi utilizado como base da manipulação de arquivos e structs durante o código.
+
+"http://www.eskimo.com/~scs/cclass/int/sx10b.html", "C programming class notes - 24.2 What are Function Pointers Good For?". 
+Foi utilizado como base para o algoritmo da função de ordenção dos registros.
+
+"Reescrever()".
+ função nova, feita especialmente para ordenar registros alfabeticamente, elaborada pelo colega Vinícius Menezes Monte. 
+ Pediu-se ajuda porque ela é muito complicada, graças à utilização de vetores de registros, ordenamento e reescrevimento de arquivo, 
+ e exigiu a escrita de várias outras funções totalizando mais de 100 linhas.
+
+*/
