@@ -214,6 +214,7 @@ void Inic()												//completo
 
 void Listar()											//completo
 {
+	int j, k;
 	long int N_Linhas=0;
 	OBRA reg;
 	rewind(fp);
@@ -226,7 +227,12 @@ void Listar()											//completo
 		
 		Mostrar_Obra(reg);
 		
-			puts("\n\n\n\n");
+			for(j=0;j<1; j++){
+				for(k=0;k<100; k++){
+					printf("*"); 
+				}
+			}
+			printf("\n\n");
 			
 		N_Linhas++;
 		
@@ -315,7 +321,6 @@ void Apagar_Obra()										//completo
 int Reescrever()				  					    //completo
 {
 	int i=0,j=0;
-	FILE *fp2;
 	OBRA obra_aux;
 	OBRA v[10];
 	OBRA w[10];
