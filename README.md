@@ -7,4 +7,6 @@ São projetos que eu fiz para o trabalho de finalização da cadeira de Programa
 - 'Imovel.c' Sistema de pesquisa de imóveis para se alugar, permitindo busca por bairro e por área em metros quadrados.
 - 'Alunos.c' Sistema Acadêmico, incluindo listagem de alunos reprovados e aprovados, e pesquisas de alunos por nome e por curso.
 
+Para fazer os testes, basta compilar os códigos, gerando os executáveis. Você pode optar ou não por usar alguma IDE. Caso queira uma IDE, recomendo o uso do Dev-C++ ou do CodeBlocks.
+
 
